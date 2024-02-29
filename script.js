@@ -8,7 +8,7 @@ canvas.height = window.innerHeight;
 let bacteria = {
     x: window.innerWidth / 2,
     y: window.innerHeight / 2,
-    size: 2,
+    size: 10,
     keyPressed: {
         ArrowUp: false,
         ArrowLeft: false,
@@ -31,7 +31,7 @@ function drawCircle(ctx, x, y, radius, fillColor) {
 function calculateDistance(x1, y1, x2, y2) {
     return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 }
-for (let i = 0; i < 1000; i++) {
+for (let i = 0; i < 200; i++) {
     const x = getRandomNumberInRange(20, window.innerWidth - 20);
     const y = getRandomNumberInRange(20, window.innerHeight - 20);
     const velocityX = getRandomNumberInRange(-5, 5);
@@ -41,7 +41,7 @@ for (let i = 0; i < 1000; i++) {
 }
 const gameLoop = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const speed = 3;
+    const speed = 6;
     if (bacteria.keyPressed.ArrowDown)
         bacteria.y += speed;
     if (bacteria.keyPressed.ArrowUp)
@@ -57,8 +57,31 @@ const gameLoop = () => {
             foodArray.splice(index, 1);
             bacteria.size += 2 / 3.14;
         }
-        foodObj.velocityX += getRandomNumberInRange(-1, 1);
-        foodObj.velocityY += getRandomNumberInRange(-1, 1);
+        foodObj.velocityX += getRandomNumberInRange(-0.3, 0.3);
+        foodObj.velocityY += getRandomNumberInRange(-0.3, 0.3);
+        foodArray.forEach((obj) => {
+            const foodDistance = calculateDistance(foodObj.x, foodObj.y, obj.x, obj.y);
+            if (foodDistance <= 10) {
+                if (foodObj.y < obj.y) {
+                    foodObj.y += -1;
+                }
+                else {
+                    foodObj.y += 1;
+                }
+            }
+            if (foodDistance <= 10) {
+                if (foodObj.x > obj.x) {
+                    foodObj.x += 1;
+                }
+                else {
+                    foodObj.x += -1;
+                }
+            }
+            if (foodDistance < 50) {
+                foodObj.velocityY += obj.velocityY * 0.08;
+                foodObj.velocityX += obj.velocityX * 0.08;
+            }
+        });
         if (distance < 70) {
             if (foodObj.x > bacteria.x) {
                 foodObj.velocityX = 5;
@@ -67,7 +90,7 @@ const gameLoop = () => {
                 foodObj.velocityX = -5;
             }
         }
-        if (distance < 40) {
+        if (distance < 70) {
             if (foodObj.y > bacteria.y) {
                 foodObj.velocityY = 5;
             }
@@ -101,7 +124,7 @@ const gameLoop = () => {
         }
         foodObj.x += foodObj.velocityX;
         foodObj.y += foodObj.velocityY;
-        drawRect(foodObj.x, foodObj.y, 2, 2, 'red', ctx);
+        drawRect(foodObj.x, foodObj.y, 7, 7, 'rgb(0,255,224)', ctx);
     });
     requestAnimationFrame(gameLoop);
 };
