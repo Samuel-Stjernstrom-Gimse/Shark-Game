@@ -31,7 +31,7 @@ function drawCircle(ctx, x, y, radius, fillColor) {
 function calculateDistance(x1, y1, x2, y2) {
     return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 }
-for (let i = 0; i < 200; i++) {
+for (let i = 0; i < 300; i++) {
     const x = getRandomNumberInRange(20, window.innerWidth - 20);
     const y = getRandomNumberInRange(20, window.innerHeight - 20);
     const velocityX = getRandomNumberInRange(-5, 5);
@@ -41,7 +41,7 @@ for (let i = 0; i < 200; i++) {
 }
 const gameLoop = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const speed = 6;
+    const speed = 2;
     if (bacteria.keyPressed.ArrowDown)
         bacteria.y += speed;
     if (bacteria.keyPressed.ArrowUp)
@@ -62,20 +62,10 @@ const gameLoop = () => {
         foodArray.forEach((obj) => {
             const foodDistance = calculateDistance(foodObj.x, foodObj.y, obj.x, obj.y);
             if (foodDistance <= 10) {
-                if (foodObj.y < obj.y) {
-                    foodObj.y += -1;
-                }
-                else {
-                    foodObj.y += 1;
-                }
+                foodObj.y += foodObj.y < obj.y ? -1 : 1;
             }
             if (foodDistance <= 10) {
-                if (foodObj.x > obj.x) {
-                    foodObj.x += 1;
-                }
-                else {
-                    foodObj.x += -1;
-                }
+                foodObj.x += foodObj.x > obj.x ? 1 : -1;
             }
             if (foodDistance < 50) {
                 foodObj.velocityY += obj.velocityY * 0.08;
@@ -83,44 +73,46 @@ const gameLoop = () => {
             }
         });
         if (distance < 70) {
-            if (foodObj.x > bacteria.x) {
-                foodObj.velocityX = 5;
-            }
-            else {
-                foodObj.velocityX = -5;
-            }
+            foodObj.velocityX = foodObj.x > bacteria.x ? 5 : -5;
         }
         if (distance < 70) {
-            if (foodObj.y > bacteria.y) {
-                foodObj.velocityY = 5;
-            }
-            else {
-                foodObj.velocityY = -5;
-            }
+            foodObj.velocityY = foodObj.y > bacteria.y ? 5 : -5;
         }
-        if (foodObj.velocityX > 5) {
+        if (foodObj.velocityX > 4) {
             foodObj.velocityX = 1;
         }
         else if (foodObj.velocityX < -5) {
             foodObj.velocityX = -1;
         }
-        if (foodObj.velocityY > 5) {
+        if (foodObj.velocityY > 4) {
             foodObj.velocityY = 1;
         }
         else if (foodObj.velocityY < -5) {
             foodObj.velocityY = -1;
         }
+        if (foodObj.x <= 200) {
+            foodObj.velocityX += 0.9;
+        }
+        else if (foodObj.x >= window.innerWidth - 200) {
+            foodObj.velocityX -= 0.9;
+        }
         if (foodObj.x <= 30) {
-            foodObj.velocityX = 3;
+            foodObj.velocityX = 5;
         }
         else if (foodObj.x >= window.innerWidth - 30) {
-            foodObj.velocityX = -3;
+            foodObj.velocityX = -5;
+        }
+        if (foodObj.y <= 200) {
+            foodObj.velocityY += 0.9;
+        }
+        else if (foodObj.y >= window.innerHeight - 200) {
+            foodObj.velocityY -= 0.9;
         }
         if (foodObj.y <= 30) {
-            foodObj.velocityY = 3;
+            foodObj.velocityY = 5;
         }
         else if (foodObj.y >= window.innerHeight - 30) {
-            foodObj.velocityY = -3;
+            foodObj.velocityY = -5;
         }
         foodObj.x += foodObj.velocityX;
         foodObj.y += foodObj.velocityY;
