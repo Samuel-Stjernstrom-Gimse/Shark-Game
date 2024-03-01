@@ -11,7 +11,9 @@
 }
 
 canvas {
-    background-color: #001a3c;
+    image-rendering: pixelated;
+    background-image: url("img/bg.jpg");
+    background-size: cover;
 }
 body{
     max-height: 100vh;
