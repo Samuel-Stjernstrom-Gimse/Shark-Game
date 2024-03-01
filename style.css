@@ -18,3 +18,10 @@ canvas {
 body{
     max-height: 100vh;
 }
+
+#score{
+    position: fixed;
+    top: 3%;
+    left: 3%;
+    color: orangered;
+}

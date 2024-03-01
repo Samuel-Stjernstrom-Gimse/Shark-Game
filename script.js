@@ -2,17 +2,18 @@
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const foodArray = [];
+const poisonArray = [];
 const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
 const fishRightImg = document.getElementById('fish-right');
 const fishLeftImg = document.getElementById('fish-left');
 const sharkLeftImg1 = document.getElementById('shark-left1');
 const sharkLeftImg2 = document.getElementById('shark-left2');
-const sharkLeftImg3 = document.getElementById('shark-left3');
-const sharkLeftImg4 = document.getElementById('shark-left4');
 const sharkRightImg1 = document.getElementById('shark-right1');
 const sharkRightImg2 = document.getElementById('shark-right2');
-const sharkRightImg3 = document.getElementById('shark-right3');
-const sharkRightImg4 = document.getElementById('shark-right4');
+const poisonLeftImg = document.getElementById('poison-left');
+const poisonRightImg = document.getElementById('poison-right');
+const score = document.getElementById('score');
+let scoreCounter = 0;
 let swimRightCounter = 1;
 let swimLeftCounter = 1;
 let lastKeyPress = 'left';
@@ -29,25 +30,7 @@ let bacteria = {
         ArrowDown: false
     }
 };
-function drawImageOnCanvas(x, y, imageUrl, ctx) {
-    const img = new Image();
-    img.onload = function () {
-        ctx.drawImage(img, x, y, 20, 20);
-    };
-    img.src = imageUrl;
-}
 const getRandomNumberInRange = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-const drawRect = (x, y, w, h, color, ctx) => {
-    ctx.fillStyle = color;
-    ctx.fillRect(x, y, w, h);
-};
-function drawCircle(ctx, x, y, radius, fillColor) {
-    ctx.beginPath();
-    ctx.arc(x, y, radius, 0, 2 * Math.PI);
-    ctx.fillStyle = fillColor;
-    ctx.fill();
-    ctx.stroke();
-}
 function calculateDistance(x1, y1, x2, y2) {
     return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 }
@@ -59,9 +42,17 @@ for (let i = 0; i < 200; i++) {
     const foodObject = { x, y, velocityX, velocityY };
     foodArray.push(foodObject);
 }
+for (let i = 0; i < 5; i++) {
+    const x = getRandomNumberInRange(20, window.innerWidth - 20);
+    const y = getRandomNumberInRange(20, window.innerHeight - 20);
+    const velocityX = getRandomNumberInRange(-5, 5);
+    const velocityY = getRandomNumberInRange(-5, 5);
+    const poisonObject = { x, y, velocityX, velocityY };
+    poisonArray.push(poisonObject);
+}
 const gameLoop = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    const speed = 5;
+    const speed = 4;
     if (bacteria.keyPressed.ArrowDown)
         bacteria.y += speed;
     if (bacteria.keyPressed.ArrowUp)
@@ -102,18 +93,69 @@ const gameLoop = () => {
             ctx.drawImage(sharkRightImg2, bacteria.x - (bacteria.size * 3.2 + 40) / 2, bacteria.y - (bacteria.size + 40) / 2, bacteria.size * 3.2 + 40, bacteria.size + 40);
         }
     }
+    poisonArray.forEach((poisonObj, index) => {
+        const distance = calculateDistance(bacteria.x, bacteria.y, poisonObj.x, poisonObj.y);
+        if (distance < bacteria.size / 2 + 40) {
+            poisonArray.splice(index, 1);
+            bacteria.size -= 2;
+            scoreCounter += -20;
+            score.textContent = `Score: ${scoreCounter}`;
+        }
+        if (poisonObj.y <= 30) {
+            poisonObj.velocityY = 5;
+        }
+        else if (poisonObj.y >= window.innerHeight - 30) {
+            poisonObj.velocityY = -5;
+        }
+        if (poisonObj.x <= 30) {
+            poisonObj.velocityX = 5;
+        }
+        else if (poisonObj.x >= window.innerWidth - 30) {
+            poisonObj.velocityX = -5;
+        }
+        poisonObj.velocityX += getRandomNumberInRange(-0.4, 0.4);
+        poisonObj.velocityY += getRandomNumberInRange(-0.4, 0.4);
+        if (distance < 400) {
+            poisonObj.velocityX += poisonObj.x > bacteria.x ? -1 : 1;
+        }
+        if (distance < 400) {
+            poisonObj.velocityY += poisonObj.y > bacteria.y ? -1 : 1;
+        }
+        if (poisonObj.velocityX > 1) {
+            poisonObj.velocityX = 1;
+        }
+        else if (poisonObj.velocityX < -1) {
+            poisonObj.velocityX = -1;
+        }
+        if (poisonObj.velocityY > 1) {
+            poisonObj.velocityY = 1;
+        }
+        else if (poisonObj.velocityY < -1) {
+            poisonObj.velocityY = -1;
+        }
+        poisonObj.x += poisonObj.velocityX;
+        poisonObj.y += poisonObj.velocityY;
+        if (poisonObj.velocityX <= 0) {
+            ctx.drawImage(poisonLeftImg, poisonObj.x, poisonObj.y, 30, 30);
+        }
+        else {
+            ctx.drawImage(poisonRightImg, poisonObj.x, poisonObj.y, 30, 30);
+        }
+    });
     foodArray.forEach((foodObj, index) => {
         const distance = calculateDistance(bacteria.x, bacteria.y, foodObj.x, foodObj.y);
-        if (distance < bacteria.size) {
+        if (distance < bacteria.size / 2 + 40) {
             foodArray.splice(index, 1);
-            bacteria.size += 2 / 3.14;
+            bacteria.size += 0.1;
+            scoreCounter += 1;
+            score.textContent = `Score: ${scoreCounter}`;
         }
         foodObj.velocityX += getRandomNumberInRange(-0.2, 0.2);
         foodObj.velocityY += getRandomNumberInRange(-0.1, 0.1);
-        if (distance < 70) {
+        if (distance < 100) {
             foodObj.velocityX = foodObj.x > bacteria.x ? 5 : -5;
         }
-        if (distance < 70) {
+        if (distance < 100) {
             foodObj.velocityY = foodObj.y > bacteria.y ? 5 : -5;
         }
         if (foodObj.x <= 200) {
