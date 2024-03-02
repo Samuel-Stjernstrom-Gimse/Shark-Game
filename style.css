@@ -11,7 +11,7 @@
 }
 
 canvas {
-    image-rendering: pixelated;
+    image-rendering: high-quality;
     background-image: url("img/bg.jpg");
     background-size: cover;
 }
@@ -19,9 +19,36 @@ body{
     max-height: 100vh;
 }
 
-#score{
+#stats{
     position: fixed;
     top: 3%;
     left: 3%;
     color: orangered;
+}
+
+
+#lives{
+    display: flex;
+    flex-direction: row;
+    position: fixed;
+    top: 3%;
+    right: 10%;
+}
+
+#heart{
+    height: 40px;
+}
+
+#play {
+    position: fixed;
+    left: 50%;
+    top: 50%;
+}
+
+button{
+    background-color: red;
+    width: 200px;
+    height: 70px;
+    font-size: 30px;
+    color: white;
 }
