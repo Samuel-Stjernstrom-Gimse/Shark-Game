@@ -106,7 +106,7 @@ const main = () => {
             const y = getRandomNumberInRange(20, window.innerHeight - 20);
             const velocityX = getRandomNumberInRange(-5, 5);
             const velocityY = getRandomNumberInRange(-5, 5);
-            const topSpeed = 10;
+            const topSpeed = 7;
             const species = 'fast';
             const foodObject = { species, x, y, velocityX, velocityY, topSpeed };
             foodArray.push(foodObject);
