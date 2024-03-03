@@ -9,13 +9,16 @@ export type Shark = {
 	x: number
 	y: number
 	size: number
-	lives: 3
+	lives: number
+	speed: number
 	keyPressed: { ArrowUp: boolean; ArrowLeft: boolean; ArrowRight: boolean; ArrowDown: boolean }
 }
 
 export type Food = {
+	species: string
 	x: number
 	y: number
 	velocityX: number
 	velocityY: number
+	topSpeed: number
 }
