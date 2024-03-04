@@ -12,7 +12,7 @@
 
 canvas {
     image-rendering: crisp-edges;
-    background-image: url("img/bg.jpg");
+    background-image: url("img/bg2.jpg");
     background-size: cover;
 }
 body{
@@ -93,5 +93,5 @@ button:active {
 #stats {
     animation:floatSpace 10s infinite linear;
     animation-direction:alternate;
-    color: #012e33;
+    color: #6acfc2;
 }

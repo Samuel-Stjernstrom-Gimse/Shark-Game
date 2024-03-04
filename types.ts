@@ -3,6 +3,7 @@ export type Poison = {
 	y: number
 	velocityX: number
 	velocityY: number
+	big: boolean
 }
 
 export type Shark = {
