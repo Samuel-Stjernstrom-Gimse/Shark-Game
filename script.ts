@@ -51,6 +51,7 @@ const main = () => {
 	const setupGame = () => {
 		drawPointCounter = 0
 		drawSpeedCounter = 0
+		drawLoseHeartCounter = 0
 		waveCount = 0
 		scoreCounter = 0
 		swimRightCounter = 1
@@ -66,6 +67,20 @@ const main = () => {
 		drawLives()
 		getPoison(1)
 		getFood(40, 3)
+
+		shark = {
+			x: window.innerWidth / 2,
+			y: window.innerHeight / 2,
+			size: 10,
+			lives: 4,
+			speed: 7,
+			keyPressed: {
+				ArrowUp: false,
+				ArrowLeft: false,
+				ArrowRight: false,
+				ArrowDown: false
+			}
+		}
 	}
 
 	let shark: Shark = {
@@ -306,7 +321,6 @@ const main = () => {
 					poisonArray.splice(index, 1)
 					shark.size -= 6
 					shark.lives -= 1
-					shark.speed -= 0.1
 					drawLives()
 					score.textContent = `score: ${scoreCounter}`
 					drawLoseHeartCounter = 24
