@@ -31,6 +31,9 @@ const main = () => {
 
 	playBtn.style.visibility = 'visible'
 
+	let drawPointCounter = 0
+	let drawSpeedCounter = 0
+	let drawLoseHeartCounter = 0
 	let scoreCounter = 0
 	let foodArray: Food[] = []
 	let poisonArray: Poison[] = []
@@ -40,11 +43,15 @@ const main = () => {
 	let gameTime = 0
 	let lastFrameTime: number = 0
 	const fpsInterval: number = 1000 / 24
+	let waveCount = 0
 
 	canvas.width = window.innerWidth
 	canvas.height = window.innerHeight
 
 	const setupGame = () => {
+		drawPointCounter = 0
+		drawSpeedCounter = 0
+		waveCount = 0
 		scoreCounter = 0
 		swimRightCounter = 1
 		swimLeftCounter = 1
@@ -54,25 +61,11 @@ const main = () => {
 		poisonArray = []
 		foodArray = []
 
-		shark = {
-			x: window.innerWidth / 2,
-			y: window.innerHeight / 2,
-			size: 20,
-			lives: 4,
-			speed: 7,
-			keyPressed: {
-				ArrowUp: false,
-				ArrowLeft: false,
-				ArrowRight: false,
-				ArrowDown: false
-			}
-		}
-
 		playBtn.style.visibility = 'hidden'
 		ctx.clearRect(0, 0, canvas.width, canvas.height)
 		drawLives()
 		getPoison(1)
-		getFood(100, 20)
+		getFood(40, 3)
 	}
 
 	let shark: Shark = {
@@ -127,7 +120,7 @@ const main = () => {
 			const y = getRandomNumberInRange(20, window.innerHeight - 20)
 			const velocityX = getRandomNumberInRange(-5, 5)
 			const velocityY = getRandomNumberInRange(-5, 5)
-			const topSpeed = 7
+			const topSpeed = 6.5
 			const species = 'fast'
 			const foodObject: Food = { species, x, y, velocityX, velocityY, topSpeed }
 			foodArray.push(foodObject)
@@ -173,7 +166,7 @@ const main = () => {
 		if (elapsed > fpsInterval) {
 			lastFrameTime = timestamp - (elapsed % fpsInterval)
 			ctx.clearRect(0, 0, canvas.width, canvas.height)
-			const speed = shark.speed
+			let speed = shark.speed
 
 			//if (shark.keyPressed.ArrowDown) shark.y += speed
 
@@ -199,9 +192,21 @@ const main = () => {
 				shark.y += speed
 			}
 
+			if (shark.y < 0) {
+				shark.y = 0
+			} else if (shark.y > window.innerHeight) {
+				shark.y = window.innerHeight
+			}
+
+			if (shark.x < 0) {
+				shark.x = 0
+			} else if (shark.x > window.innerWidth) {
+				shark.x = window.innerWidth
+			}
+
 			if (shark.keyPressed.ArrowRight) {
 				lastKeyPress = 'right'
-				swimRightCounter += 7
+				swimRightCounter += shark.speed
 				if (swimRightCounter <= 30) {
 					ctx.drawImage(
 						sharkRightImg1,
@@ -238,7 +243,7 @@ const main = () => {
 				}
 			} else if (shark.keyPressed.ArrowLeft) {
 				lastKeyPress = 'left'
-				swimLeftCounter += 7
+				swimLeftCounter += shark.speed
 				if (swimLeftCounter <= 30) {
 					ctx.drawImage(
 						sharkLeftImg1,
@@ -301,8 +306,10 @@ const main = () => {
 					poisonArray.splice(index, 1)
 					shark.size -= 6
 					shark.lives -= 1
+					shark.speed -= 0.1
 					drawLives()
-					score.textContent = `Score: ${scoreCounter}`
+					score.textContent = `score: ${scoreCounter}`
+					drawLoseHeartCounter = 24
 				}
 
 				if (poisonObj.y <= 30) {
@@ -358,9 +365,11 @@ const main = () => {
 					shark.size += 0.2
 					scoreCounter += 1
 					score.textContent = `Score: ${scoreCounter}`
-					if (foodObj.species === 'speed') {
-						shark.speed += 1
+					if (foodObj.species === 'fast') {
+						shark.speed += 0.02
+						drawSpeedCounter = 48
 					}
+					drawPointCounter = 24
 				}
 
 				foodObj.velocityX += getRandomNumberInRange(-0.4, 0.4)
@@ -381,9 +390,9 @@ const main = () => {
 				}
 
 				if (foodObj.x <= 30) {
-					foodObj.velocityX = 5
+					foodObj.velocityX += 2
 				} else if (foodObj.x >= window.innerWidth - 30) {
-					foodObj.velocityX = -5
+					foodObj.velocityX += -2
 				}
 
 				if (foodObj.y <= 200) {
@@ -393,13 +402,7 @@ const main = () => {
 				}
 
 				if (foodObj.y <= 30) {
-					if (foodObj.y > window.innerWidth / 2) {
-						foodObj.velocityY = 5
-						foodObj.velocityX = -2
-					} else {
-						foodObj.velocityY = 5
-						foodObj.velocityX = 2
-					}
+					foodObj.velocityY = 5
 				} else if (foodObj.y >= window.innerHeight - 30) {
 					foodObj.velocityY = -5
 				}
@@ -452,8 +455,17 @@ const main = () => {
 					gameTime = 0
 					getPoison(1)
 				}
-				if (foodArray.length <= 0) {
-					getFood(100, 20)
+				if (foodArray.length <= 6) {
+					waveCount += 1
+					if (waveCount === 1) {
+						getFood(60, 6)
+					} else if (waveCount === 2) {
+						getFood(70, 16)
+					} else if (waveCount === 3) {
+						getFood(100, 30)
+					} else {
+						getFood(50, 100)
+					}
 				}
 				/*	drawRect(foodObj.x, foodObj.y, 7, 7, 'rgb(0,255,224)', ctx)*/
 			})
@@ -466,6 +478,27 @@ const main = () => {
 			setupGame()
 			playBtn.style.visibility = 'visible'
 			return
+		}
+
+		if (drawPointCounter > 0) {
+			drawPointCounter -= 1
+			ctx.font = '20px Arial'
+			ctx.fillStyle = 'rgb(25,255,0)'
+			ctx.fillText(`+1`, shark.x, shark.y - 24 + drawPointCounter)
+		}
+
+		if (drawSpeedCounter > 0) {
+			drawSpeedCounter -= 1
+			ctx.font = '16px Arial'
+			ctx.fillStyle = 'yellow'
+			ctx.fillText(`Speed +2%`, shark.x, shark.y + 48 - drawSpeedCounter)
+		}
+
+		if (drawLoseHeartCounter > 0) {
+			drawLoseHeartCounter -= 1
+			ctx.font = '30px Arial'
+			ctx.fillStyle = 'rgb(255,0,0)'
+			ctx.fillText(`-1 heart`, shark.x, shark.y + 48 - drawLoseHeartCounter)
 		}
 
 		requestAnimationFrame(gameLoop)
