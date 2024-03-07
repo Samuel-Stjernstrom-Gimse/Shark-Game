@@ -557,6 +557,7 @@ const main = () => {
 	window.addEventListener('keydown', (e: KeyboardEvent): void => {
 		arrowKeys.forEach((button: string): void => {
 			if (button === e.key) {
+				e.preventDefault()
 				// @ts-ignore
 				shark.keyPressed[button] = true
 			}
@@ -566,6 +567,7 @@ const main = () => {
 	window.addEventListener('keyup', (e: KeyboardEvent): void => {
 		arrowKeys.forEach((button: string): void => {
 			if (button === e.key) {
+				e.preventDefault()
 				// @ts-ignore
 				shark.keyPressed[button] = false
 			}
