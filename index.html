@@ -16,6 +16,15 @@
     <meta name="theme-color" content="#ffffff">
 </head>
 <body>
+<script>
+    document.addEventListener('keydown', function(event) {
+        // Check if the pressed key's keyCode is one of the arrow keys
+        if ([37, 38, 39, 40].indexOf(event.keyCode) > -1) {
+            // Prevent the default action (scrolling) on arrow key press
+            event.preventDefault();
+        }
+    }, false);
+</script>
 <div id="stats">
     <h2 id="score">
         score: 0
